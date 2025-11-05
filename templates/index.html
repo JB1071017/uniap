@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON Extractor API</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4285F4;
+            --primary-dark: #3367D6;
+            --secondary: #34A853;
+            --accent: #EA4335;
+            --text: #202124;
+            --text-light: #5F6368;
+            --bg: #F8F9FA;
+            --card-bg: rgba(255, 255, 255, 0.75);
+            --card-border: rgba(255, 255, 255, 0.2);
+            --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Google Sans', 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px 0;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 500;
+            margin-bottom: 10px;
+            color: var(--text);
+            position: relative;
+            display: inline-block;
+        }
+
+        header h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+
+        header p {
+            font-size: 1.2rem;
+            color: var(--text-light);
+            max-width: 600px;
+            margin: 20px auto 0;
+        }
+
+        .section {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            padding: 30px;
+            margin-bottom: 30px;
+            transition: var(--transition);
+            animation: slideUp 0.6s ease-out;
+        }
+
+        .section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .section h2 {
+            font-size: 1.5rem;
+            font-weight: 500;
+            margin-bottom: 20px;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section h2 i {
+            color: var(--primary);
+            font-size: 1.3rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        input[type="email"],
+        input[type="text"] {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #dadce0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: var(--transition);
+            background: white;
+        }
+
+        input[type="email"]:focus,
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
+        }
+
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 14px 24px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(66, 133, 244, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .result {
+            margin-top: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .loading {
+            padding: 20px;
+            text-align: center;
+            color: var(--text-light);
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 8px;
+        }
+
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top: 2px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+
+        .success {
+            background: rgba(52, 168, 83, 0.1);
+            border-left: 4px solid var(--secondary);
+            padding: 20px;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .success h3 {
+            color: var(--secondary);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .error {
+            background: rgba(234, 67, 53, 0.1);
+            border-left: 4px solid var(--accent);
+            padding: 20px;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .error h3 {
+            color: var(--accent);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .generated-key {
+            background: rgba(66, 133, 244, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 1.1rem;
+            margin: 15px 0;
+            word-break: break-all;
+            border: 1px dashed var(--primary);
+        }
+
+        pre {
+            background: #f6f8fa;
+            border-radius: 8px;
+            padding: 20px;
+            overflow-x: auto;
+            margin-top: 15px;
+            border: 1px solid #e1e4e8;
+        }
+
+        code {
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: #24292e;
+        }
+
+        .code-block {
+            margin-bottom: 25px;
+        }
+
+        .code-block h3 {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            color: var(--text);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { 
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .section {
+                padding: 20px;
+            }
+            
+            header h1 {
+                font-size: 2rem;
+            }
+            
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>JSON Extractor API</h1>
+            <p>Extract JSON data from any URL with a simple API call</p>
+        </header>
+
+        <div class="grid">
+            <!-- API Key Generation -->
+            <div class="section">
+                <h2><i class="fas fa-key"></i> Get Your API Key</h2>
+                <form id="generateKeyForm">
+                    <div class="form-group">
+                        <label for="user_email">Your Email</label>
+                        <input type="email" id="user_email" placeholder="your@email.com" required>
+                    </div>
+                    <button type="submit">
+                        <i class="fas fa-bolt"></i> Generate API Key
+                    </button>
+                </form>
+                <div id="keyResult" class="result"></div>
+            </div>
+
+            <!-- API Testing -->
+            <div class="section">
+                <h2><i class="fas fa-flask"></i> Test Your API</h2>
+                <form id="testApiForm">
+                    <div class="form-group">
+                        <label for="test_api_key">Your API Key</label>
+                        <input type="text" id="test_api_key" placeholder="Paste your API key here" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="test_url">Enter ANY URL</label>
+                        <input type="text" id="test_url" placeholder="https://api.github.com/users/octocat" required>
+                    </div>
+                    <button type="submit">
+                        <i class="fas fa-code"></i> Extract JSON
+                    </button>
+                </form>
+                <div id="testResult" class="result"></div>
+            </div>
+        </div>
+
+        <!-- Quick Test -->
+        <div class="section">
+            <h2><i class="fas fa-rocket"></i> Quick Test (No API Key)</h2>
+            <form id="quickTestForm">
+                <div class="form-group">
+                    <label for="quick_test_url">Test URL</label>
+                    <input type="text" id="quick_test_url" placeholder="https://api.github.com/users/octocat" required>
+                </div>
+                <button type="submit">
+                    <i class="fas fa-play"></i> Quick Test
+                </button>
+            </form>
+            <div id="quickTestResult" class="result"></div>
+        </div>
+
+        <!-- Documentation -->
+        <div class="section">
+            <h2><i class="fas fa-book"></i> API Documentation</h2>
+            
+            <div class="code-block">
+                <h3>Extract JSON from URL</h3>
+                <pre><code>POST /api/extract
+Headers: 
+  X-API-Key: your_api_key_here
+  Content-Type: application/json
+Body:
+  {"url": "https://any-url.com"}</code></pre>
+            </div>
+            
+            <div class="code-block">
+                <h3>Python Example</h3>
+                <pre><code>import requests
+
+response = requests.post(
+    "http://localhost:5000/api/extract",
+    headers={"X-API-Key": "your_key"},
+    json={"url": "https://api.github.com/users/octocat"}
+)
+print(response.json())</code></pre>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Generate API Key
+        document.getElementById('generateKeyForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const userEmail = document.getElementById('user_email').value;
+            
+            try {
+                const response = await fetch('/generate-key', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({email: userEmail, plan_type: 'free'})
+                });
+                const result = await response.json();
+                
+                const keyResult = document.getElementById('keyResult');
+                if (result.success) {
+                    keyResult.innerHTML = `
+                        <div class="success">
+                            <h3><i class="fas fa-check-circle"></i> API Key Generated</h3>
+                            <div class="generated-key">${result.api_key}</div>
+                            <p><em>Key copied to test field!</em></p>
+                        </div>
+                    `;
+                    document.getElementById('test_api_key').value = result.api_key;
+                }
+            } catch (error) {
+                document.getElementById('keyResult').innerHTML = `<div class="error"><h3><i class="fas fa-exclamation-circle"></i> Error</h3><p>${error.message}</p></div>`;
+            }
+        });
+
+        // Test API
+        document.getElementById('testApiForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const apiKey = document.getElementById('test_api_key').value;
+            const url = document.getElementById('test_url').value;
+            
+            const testResult = document.getElementById('testResult');
+            testResult.innerHTML = `<div class="loading">Extracting JSON...</div>`;
+
+            try {
+                const response = await fetch('/api/extract', {
+                    method: 'POST',
+                    headers: {'X-API-Key': apiKey, 'Content-Type': 'application/json'},
+                    body: JSON.stringify({url: url})
+                });
+                const result = await response.json();
+                displayResults(result, 'testResult');
+            } catch (error) {
+                testResult.innerHTML = `<div class="error"><h3><i class="fas fa-exclamation-circle"></i> Error</h3><p>${error.message}</p></div>`;
+            }
+        });
+
+        // Quick Test
+        document.getElementById('quickTestForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const url = document.getElementById('quick_test_url').value;
+            
+            const quickTestResult = document.getElementById('quickTestResult');
+            quickTestResult.innerHTML = `<div class="loading">Testing...</div>`;
+
+            try {
+                const response = await fetch('/api/public-extract', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({url: url})
+                });
+                const result = await response.json();
+                displayResults(result, 'quickTestResult');
+            } catch (error) {
+                quickTestResult.innerHTML = `<div class="error"><h3><i class="fas fa-exclamation-circle"></i> Error</h3><p>${error.message}</p></div>`;
+            }
+        });
+
+        function displayResults(result, elementId) {
+            const resultDiv = document.getElementById(elementId);
+            if (!result.success) {
+                resultDiv.innerHTML = `<div class="error"><h3><i class="fas fa-exclamation-circle"></i> Failed</h3><p>${result.error}</p></div>`;
+                return;
+            }
+
+            let html = `<div class="success"><h3><i class="fas fa-check-circle"></i> Success</h3>`;
+            if (result.data) {
+                html += `<pre><code>${JSON.stringify(result.data, null, 2)}</code></pre>`;
+            }
+            html += `</div>`;
+            resultDiv.innerHTML = html;
+        }
+
+        // Auto-fill example URL
+        document.getElementById('test_url').value = 'https://api.github.com/users/octocat';
+        document.getElementById('quick_test_url').value = 'https://api.github.com/users/octocat';
+    </script>
+</body>
+</html>

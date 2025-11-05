@@ -1,0 +1,24 @@
+{
+  "api_rQuOYX1L5LeDYkp49OMJWUHxgYPgnSou": {
+    "user_email": "businessjb70@gmail.com",
+    "api_key": "api_rQuOYX1L5LeDYkp49OMJWUHxgYPgnSou",
+    "plan_type": "free",
+    "requests_per_day": 100,
+    "rate_limit": 10,
+    "created_at": "2025-11-03T23:28:16.328010",
+    "is_active": true,
+    "total_requests": 4,
+    "last_used": "2025-11-03T23:30:50.014670"
+  },
+  "api_In0M3BCBuuSAzzsMM06Y0EC2tTCqCRkM": {
+    "user_email": "businessjb70@gmail.com",
+    "api_key": "api_In0M3BCBuuSAzzsMM06Y0EC2tTCqCRkM",
+    "plan_type": "free",
+    "requests_per_day": 100,
+    "rate_limit": 10,
+    "created_at": "2025-11-03T23:37:28.287816",
+    "is_active": true,
+    "total_requests": 2,
+    "last_used": "2025-11-03T23:38:21.810767"
+  }
+}
